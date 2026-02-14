@@ -22,8 +22,8 @@ export const transactionsTable = pgTable(
     txHash: varchar("tx_hash", { length: 255 }).unique(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => ({
-    playerIdIndex: index("player_id_idx").on(table.playerId), //For quick look up of a player
-    createdAtIndex: index("created_at_idx").on(table.createdAt), //For quick look up on latest transactions
-  }),
+  (table) => [
+    index("player_id_idx").on(table.playerId), //For quick look up of a player
+    index("created_at_idx").on(table.createdAt), //For quick look up on latest transactions
+  ],
 );

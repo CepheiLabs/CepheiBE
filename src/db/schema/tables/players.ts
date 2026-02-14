@@ -31,8 +31,8 @@ export const playersTable = pgTable(
       .default("0")
       .notNull(),
   },
-  (table) => ({
-    winsIdx: index("wins_idx").on(table.totalWins), //For (Quick lookup) leaderboards based on wins
-    totalEarningsIdx: index("total_earnings_idx").on(table.totalEarnings), //For (Quick lookup) leaderboards based on earnings
-  }),
+  (table) => [
+    index("wins_idx").on(table.totalWins), //For (Quick lookup) leaderboards based on wins
+    index("total_earnings_idx").on(table.totalEarnings), //For (Quick lookup) leaderboards based on earnings
+  ],
 );
