@@ -1,4 +1,4 @@
-import { pgEnum, PgEnum } from "drizzle-orm/pg-core";
+import { pgEnum } from "drizzle-orm/pg-core";
 
 export const gameStatusEnum = pgEnum("game_status", [
   "PENDING",
