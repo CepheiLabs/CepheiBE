@@ -1,0 +1,37 @@
+import {
+  pgTable,
+  varchar,
+  uuid,
+  text,
+  timestamp,
+  integer,
+  decimal,
+  index,
+} from "drizzle-orm/pg-core";
+
+export const playersTable = pgTable(
+  "players",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    email: varchar("email", { length: 255 }).unique(),
+    googleId: varchar("google_id", { length: 255 }).unique(),
+    walletAddress: varchar("wallet_address", { length: 255 }).unique(),
+    username: varchar("username", { length: 255 }).unique(),
+    password: text("password"),
+    avatarUrl: text("avatar_url"),
+    lastSeen: timestamp("last_seen").defaultNow().notNull(),
+
+    totalGames: integer("total_games").default(0).notNull(),
+    totalWins: integer("total_wins").default(0).notNull(),
+    totalLosses: integer("total_losses").default(0).notNull(),
+    totalEarnings: decimal("total_earnings", {
+      precision: 32,
+      scale: 18,
+    })
+      .default("0")
+      .notNull(),
+  },
+  (table) => ({
+    winsIdx: index("wins_idx").on(table.totalWins),
+  }),
+);
