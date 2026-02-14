@@ -6,8 +6,8 @@ import {
   pgTable,
 } from "drizzle-orm/pg-core";
 
-import { playersTable } from "./index.js";
-import { transactionTypeEnum } from "./enums.js";
+import { playersTable } from "./players.js";
+import { transactionTypeEnum } from "../enums/enums.js";
 
 export const transactionsTable = pgTable("transactions", {
   id: uuid("id").primaryKey().defaultRandom(),

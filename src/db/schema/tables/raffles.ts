@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { playersTable } from "./players.js";
 
-import { raffleStatusEnum } from "./enums.js";
+import { raffleStatusEnum } from "../enums/enums.js";
 
 export const rafflesTable = pgTable("raffles", {
   id: uuid("id").primaryKey().defaultRandom(),

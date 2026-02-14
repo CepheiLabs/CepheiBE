@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
-import { playersTable, gamesTable, rafflesTable } from "./index";
-import { transactionsTable } from "./transactions";
+import { playersTable, gamesTable, rafflesTable } from "../tables/tables.js";
+import { transactionsTable } from "../tables/transactions.js";
 
 export const playersRelations = relations(playersTable, ({ many }) => ({
   hostedGames: many(playersTable, { relationName: "host" }),

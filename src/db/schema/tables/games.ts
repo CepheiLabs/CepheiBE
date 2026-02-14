@@ -8,8 +8,8 @@ import {
   pgTable,
 } from "drizzle-orm/pg-core";
 
-import { gameStatusEnum, gameCategoryEnum } from "./enums";
-import { playersTable } from "./players";
+import { gameStatusEnum, gameCategoryEnum } from "../enums/enums.js";
+import { playersTable } from "./players.js";
 
 export const gamesTable = pgTable("games", {
   id: uuid("id").primaryKey().defaultRandom(),
