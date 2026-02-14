@@ -3,7 +3,7 @@ import { playersTable, gamesTable, rafflesTable } from "../tables/tables";
 import { transactionsTable } from "../tables/transactions";
 
 export const playersRelations = relations(playersTable, ({ many }) => ({
-  hostedGames: many(playersTable, { relationName: "host" }),
+  hostedGames: many(gamesTable, { relationName: "host" }),
   opponentGames: many(gamesTable, { relationName: "opponent" }),
   wonGames: many(gamesTable, { relationName: "winner" }),
   wonRaffles: many(rafflesTable, { relationName: "raffleWinner" }),
@@ -38,3 +38,11 @@ export const transactionsRelations = relations(
     }),
   }),
 );
+
+export const rafflesRelations = relations(rafflesTable, ({ one }) => ({
+  winner: one(playersTable, {
+    fields: [rafflesTable.winnerId],
+    references: [playersTable.id],
+    relationName: "raffleWinner",
+  }),
+}));
