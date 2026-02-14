@@ -8,7 +8,7 @@ import {
   pgTable,
 } from "drizzle-orm/pg-core";
 
-import { gameStatusEnum, gameCategoryEnum } from "../enums/enums.js";
+import { gameStatusEnum, gameCategoryEnum } from "../enums/enum.js";
 import { playersTable } from "./players.js";
 
 export const gamesTable = pgTable("games", {
