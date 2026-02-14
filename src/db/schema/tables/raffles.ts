@@ -6,9 +6,9 @@ import {
   varchar,
   timestamp,
 } from "drizzle-orm/pg-core";
-import { playersTable } from "./players.js";
+import { playersTable } from "./players";
 
-import { raffleStatusEnum } from "../enums/enum.js";
+import { raffleStatusEnum } from "../enums/enum";
 
 export const rafflesTable = pgTable("raffles", {
   id: uuid("id").primaryKey().defaultRandom(),

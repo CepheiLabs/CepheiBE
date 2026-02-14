@@ -9,6 +9,7 @@
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
     "target": "esnext",
+    "moduleResolution": "bundler",
     "types": [],
     // For nodejs:
     // "lib": ["esnext"],
@@ -41,5 +42,6 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "include": ["src"]
 }

@@ -1,3 +1,3 @@
-export * from "./enums/enum.js";
-export * from "./relations/relations.js";
-export * from "./tables/tables.js";
+export * from "./enums/enum";
+export * from "./relations/relations";
+export * from "./tables/tables";
