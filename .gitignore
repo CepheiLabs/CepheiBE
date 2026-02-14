@@ -2,10 +2,12 @@
 node_modules
 
 #typescript
-/dist
+dist/
 
 #environment variables
 .env
 
 #vs code config
 .vscode/
+
+drizze/
