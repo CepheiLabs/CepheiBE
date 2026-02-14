@@ -10,4 +10,5 @@ dist/
 #vs code config
 .vscode/
 
+#drizzle
 drizze/
