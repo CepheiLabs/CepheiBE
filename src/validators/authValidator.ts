@@ -22,3 +22,13 @@ export const loginSchema = z.object({
   email: z.email("Please provide a valid email"),
   password: z.string(),
 });
+
+export const walletNonceSchema = z.object({
+  // Polygon/EVM addresses are always 42 characters and start with 0x
+  address: z
+    .string()
+    .trim()
+    .length(42, "Address must be exactly 42 characters")
+    .startsWith("0x", "Address must start with 0x")
+    .toLowerCase(), // Gbam: normalize it immediately
+});

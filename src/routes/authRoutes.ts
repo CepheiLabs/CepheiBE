@@ -1,11 +1,17 @@
 import { Router } from "express";
-import { registerPlayer, login, logout } from "../controllers/authController";
+import {
+  registerPlayer,
+  login,
+  logout,
+  getWalletNonce,
+} from "../controllers/authController";
 
 const router = Router();
 
 router.post("/register", registerPlayer);
 router.post("/login", login);
 router.post("/logout", logout);
+router.post("/wallet/nonce", getWalletNonce);
 
 export default router;
 

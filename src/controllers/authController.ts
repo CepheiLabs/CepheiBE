@@ -2,12 +2,18 @@ import handleAsync from "express-async-handler";
 import type { Request, Response } from "express";
 import { or, eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
+import crypto from "node:crypto";
 
 import { db } from "../db";
-import { loginSchema, registrationSchema } from "../validators";
+import {
+  loginSchema,
+  registrationSchema,
+  walletNonceSchema,
+} from "../validators";
 import { ConflictError, InternalServerError, ValidationError } from "../errors";
 import { playersTable } from "../db/schema";
 import { signToken } from "../utils/jwt";
+import { redisClient } from "../utils/redis";
 
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || "10", 10);
 
@@ -163,4 +169,41 @@ const logout = handleAsync(async (req: Request, res: Response) => {
     });
 });
 
-export { registerPlayer, login, logout };
+/**
+ * @desc    Generate nonce via Request Body
+ * @route   POST /api/v1/auth/wallet/nonce
+ */
+const getWalletNonce = handleAsync(async (req: Request, res: Response) => {
+  // 1. Validate body
+  const result = walletNonceSchema.safeParse(req.body);
+
+  if (!result.success) {
+    throw new ValidationError(
+      "Invalid wallet address",
+      result.error.flatten().fieldErrors,
+    );
+  }
+
+  // 2. Destructure
+  const { address } = result.data;
+  const nonce = crypto.randomBytes(16).toString("hex");
+
+  // 3. Redify
+  await redisClient.set(`nonce:${address}`, nonce, {
+    expiration: {
+      type: "EX",
+      value: 300,
+    },
+  });
+
+  //4. Send response
+  res.status(200).json({
+    status: "success",
+    data: {
+      nonce,
+      message: `Welcome to Cephi! Sign this message to verify ownership. \n\nNonce: ${nonce}`,
+    },
+  });
+});
+
+export { registerPlayer, login, logout, getWalletNonce };
