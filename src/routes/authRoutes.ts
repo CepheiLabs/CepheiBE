@@ -3,6 +3,10 @@ import { registerPlayer } from "../controllers/authController";
 
 const router = Router();
 
+router.post("/register", registerPlayer);
+
+export default router;
+
 /**
  * @swagger
  * /api/v1/auth/register:
@@ -64,7 +68,3 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-
-router.post("/register", registerPlayer);
-
-export default router;
