@@ -15,5 +15,5 @@ export const setupSwagger = (app: Express): void => {
     res.send(swaggerSpec);
   });
 
-  logger.info(`✅ Swagger Docs available at ${URL}`);
+  logger.info(`Swagger Docs available at ${URL}`);
 };
