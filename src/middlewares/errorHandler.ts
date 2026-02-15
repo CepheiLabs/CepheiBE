@@ -5,6 +5,7 @@ import logger from "../utils/logger";
 interface ErrorResponse {
   status: string;
   message: string;
+  details?: unknown;
   stack?: string;
 }
 
@@ -24,6 +25,10 @@ const errorHandler = (
   }
 
   const response: ErrorResponse = { status: "error", message };
+
+  if (err.details) {
+    response.details = err.details;
+  }
 
   if (process.env.NODE_ENV !== "production") {
     response.stack = err.stack;

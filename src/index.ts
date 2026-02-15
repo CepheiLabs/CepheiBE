@@ -6,6 +6,10 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 
 import logger from "./utils/logger";
+
+import authRouter from "./routes/authRoutes";
+import errorHandler from "./middlewares/errorHandler";
+
 const PORT = 5000;
 const app: Express = express();
 
@@ -37,8 +41,11 @@ const authLimiter = rateLimit({
 app.use(express.json());
 
 // *️⃣*️⃣APPLICATION ROUTES*️⃣*️⃣
+app.use("/api/v1/auth", authLimiter, authRouter);
 
 setupSwagger(app);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   logger.info(`App running on port ${PORT}...`);
