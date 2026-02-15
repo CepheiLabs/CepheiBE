@@ -9,6 +9,7 @@ import logger from "./utils/logger";
 
 import authRouter from "./routes/authRoutes";
 import errorHandler from "./middlewares/errorHandler";
+import { connectRedis } from "./utils/redis";
 
 const PORT = 5000;
 const app: Express = express();
@@ -47,6 +48,14 @@ setupSwagger(app);
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  logger.info(`App running on port ${PORT}...`);
-});
+const startServer = async () => {
+  // 1. Connect to drizzle/postgres
+  // 2. Connect to redis
+  await connectRedis();
+
+  app.listen(PORT, () => {
+    logger.info(`App running on port ${PORT}...`);
+  });
+};
+
+startServer();
