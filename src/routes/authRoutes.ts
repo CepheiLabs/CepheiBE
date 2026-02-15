@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { registerPlayer, login } from "../controllers/authController";
+import { registerPlayer, login, logout } from "../controllers/authController";
 
 const router = Router();
 
 router.post("/register", registerPlayer);
 router.post("/login", login);
+router.post("/logout", logout);
 
 export default router;
 
@@ -126,6 +127,31 @@ export default router;
  *         description: Validation error
  *       401:
  *         description: Invalid email or password
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/auth/logout:
+ *   post:
+ *     summary: Log out the current player
+ *     tags:
+ *       - Players
+ *     responses:
+ *       200:
+ *         description: Player logged out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Logged out successfully
  *       500:
  *         description: Internal server error
  */

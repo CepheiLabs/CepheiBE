@@ -142,4 +142,25 @@ const login = handleAsync(async (req: Request, res: Response) => {
     });
 });
 
-export { registerPlayer, login };
+/**
+ * @desc    Logout & remove token
+ * @route   POST /api/v1/auth/logout
+ * @access  Public
+ */
+const logout = handleAsync(async (req: Request, res: Response) => {
+  // 1. Remove token
+  res
+    .status(200)
+    .clearCookie("accessToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+    })
+    .json({
+      status: "success",
+      message: "Logged out successfully",
+    });
+});
+
+export { registerPlayer, login, logout };
