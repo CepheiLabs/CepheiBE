@@ -33,16 +33,16 @@ app.use(
   }),
 );
 
-const authLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000, //Ten minutes
-  max: 5,
-  message: "Too many attempts, try again later.",
-});
+// const authLimiter = rateLimit({
+//   windowMs: 10 * 60 * 1000, //Ten minutes
+//   max: 5,
+//   message: "Too many attempts, try again later.",
+// });
 
 app.use(express.json());
 
 // *️⃣*️⃣APPLICATION ROUTES*️⃣*️⃣
-app.use("/api/v1/auth", authLimiter, authRouter);
+app.use("/api/v1/auth", authRouter);
 
 setupSwagger(app);
 

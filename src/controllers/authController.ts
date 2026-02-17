@@ -1,5 +1,5 @@
 import handleAsync from "express-async-handler";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { or, eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import crypto from "node:crypto";
@@ -9,6 +9,7 @@ import {
   loginSchema,
   registrationSchema,
   walletNonceSchema,
+  walletVerifySchema,
 } from "../validators";
 import { ConflictError, InternalServerError, ValidationError } from "../errors";
 import { playersTable } from "../db/schema";
@@ -201,11 +202,41 @@ const getWalletNonce = handleAsync(async (req: Request, res: Response) => {
     status: "success",
     data: {
       nonce,
-      message: `Welcome to Cephi! Sign this message to verify ownership. \n\nNonce: ${nonce}`,
+      message: `Welcome to Cephi! Sign this message to verify ownership. \nNonce: ${nonce}`,
     },
   });
 });
 
-//TODO: WALLET VERIFICATION AND GOOGLE AUTH
+//TODO: WALLET VERIFICATION AND GOOGLE AUTH 💥💥💥💥💥💥
+/**
+ * @desc    Verify signature and link wallet to the email account
+ * @route   POST /api/v1/auth/wallet/verify
+ * @access  Private (Requires JWT from Step 1)
+ */
+
+const verifyWallet = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    // 1. Validate body
+    const result = walletVerifySchema.safeParse(req.body);
+    if (!result.success)
+      throw new ValidationError(
+        "Invalid signature data",
+        result.error.flatten().fieldErrors,
+      );
+
+    // 2. Get nonce from redis
+    const { address, signature } = result.data;
+    const normalizedAddress = address.toLowerCase();
+    const savedNonce = await redisClient.get(`nonce:{normalizedAddress}`);
+
+    if (!savedNonce) {
+      throw new ValidationError(
+        "Nonce expired or not found. Please request a new one.",
+      );
+    }
+
+    // 3.
+  },
+);
 
 export { registerPlayer, login, logout, getWalletNonce };
