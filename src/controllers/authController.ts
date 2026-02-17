@@ -11,10 +11,16 @@ import {
   walletNonceSchema,
   walletVerifySchema,
 } from "../validators";
-import { ConflictError, InternalServerError, ValidationError } from "../errors";
-import { playersTable } from "../db/schema";
+import {
+  ConflictError,
+  InternalServerError,
+  UnauthorizedError,
+  ValidationError,
+} from "../errors";
+import { playersRelations, playersTable } from "../db/schema";
 import { signToken } from "../utils/jwt";
 import { redisClient } from "../utils/redis";
+import { verifyMessage } from "ethers";
 
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || "10", 10);
 
@@ -202,12 +208,11 @@ const getWalletNonce = handleAsync(async (req: Request, res: Response) => {
     status: "success",
     data: {
       nonce,
-      message: `Welcome to Cephi! Sign this message to verify ownership. \nNonce: ${nonce}`,
+      message: `Welcome to Cephi! Sign this message to verify ownership. Nonce: ${nonce}`,
     },
   });
 });
 
-//TODO: WALLET VERIFICATION AND GOOGLE AUTH 💥💥💥💥💥💥
 /**
  * @desc    Verify signature and link wallet to the email account
  * @route   POST /api/v1/auth/wallet/verify
@@ -224,10 +229,10 @@ const verifyWallet = handleAsync(
         result.error.flatten().fieldErrors,
       );
 
-    // 2. Get nonce from redis
+    // 2. Get nonce from redis (FIXED: Added $)
     const { address, signature } = result.data;
     const normalizedAddress = address.toLowerCase();
-    const savedNonce = await redisClient.get(`nonce:{normalizedAddress}`);
+    const savedNonce = await redisClient.get(`nonce:${normalizedAddress}`);
 
     if (!savedNonce) {
       throw new ValidationError(
@@ -235,8 +240,84 @@ const verifyWallet = handleAsync(
       );
     }
 
-    // 3.
+    // 3. Reconstructing message (FIXED: Added \n\n to match getWalletNonce)
+    const message = `Welcome to Cephi! Sign this message to verify ownership. \n\nNonce: ${savedNonce}`;
+
+    // 4. Recovering address
+    let recoveredAddress: string;
+    try {
+      recoveredAddress = verifyMessage(message, signature).toLowerCase();
+    } catch (err) {
+      throw new ValidationError("Invalid signature format.");
+    }
+
+    // 5. Compare
+    if (recoveredAddress !== normalizedAddress)
+      throw new ValidationError("Signature verification failed.");
+
+    // 6. Burn nonce 💀
+    await redisClient.del(`nonce:${normalizedAddress}`);
+
+    // 7. Check DB for existing owner
+    let player = await db.query.playersTable.findFirst({
+      where: eq(playersTable.walletAddress, normalizedAddress),
+    });
+
+    const currentUserId = req.user?.id;
+
+    // 8. CASE A: Linking to an existing session (Email user connecting wallet)
+    if (currentUserId) {
+      if (player && player.id !== currentUserId) {
+        throw new ConflictError(
+          "This wallet is already linked to another account",
+        );
+      }
+
+      if (!player) {
+        [player] = await db
+          .update(playersTable)
+          .set({
+            walletAddress: normalizedAddress,
+            // updatedAt: new Date()
+          })
+          .where(eq(playersTable.id, currentUserId))
+          .returning();
+      }
+    }
+    // 9. CASE B: Wallet-Only Login (No email session exists)
+    else {
+      if (!player) {
+        // Create a new "Guest" player if they don't exist yet
+        [player] = await db
+          .insert(playersTable)
+          .values({
+            walletAddress: normalizedAddress,
+            username: `player_${normalizedAddress.slice(2, 8)}`,
+          })
+          .returning();
+      }
+    }
+
+    if (!player)
+      throw new InternalServerError("Failed to process wallet login");
+
+    // 10. Issue Token
+    const accessToken = signToken(player.id);
+
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000,
+        path: "/",
+      })
+      .json({
+        status: "success",
+        message: "Wallet verified successfully",
+        data: { player, accessToken },
+      });
   },
 );
-
-export { registerPlayer, login, logout, getWalletNonce };
+export { registerPlayer, login, logout, getWalletNonce, verifyWallet };

@@ -33,16 +33,16 @@ app.use(
   }),
 );
 
-// const authLimiter = rateLimit({
-//   windowMs: 10 * 60 * 1000, //Ten minutes
-//   max: 5,
-//   message: "Too many attempts, try again later.",
-// });
+const authLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, //Ten minutes
+  max: 200,
+  message: "Too many attempts, try again later.",
+});
 
 app.use(express.json());
 
 // *️⃣*️⃣APPLICATION ROUTES*️⃣*️⃣
-app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/auth", authLimiter, authRouter);
 
 setupSwagger(app);
 
@@ -55,6 +55,8 @@ const startServer = async () => {
 
   app.listen(PORT, () => {
     logger.info(`App running on port ${PORT}...`);
+    logger.warn("Remember to change auth rate limiting from 200 requests...");
+    logger.warn("Add wallet address to JWT for some routes auth...");
   });
 };
 
