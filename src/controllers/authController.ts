@@ -206,4 +206,6 @@ const getWalletNonce = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
+//TODO: WALLET VERIFICATION AND GOOGLE AUTH
+
 export { registerPlayer, login, logout, getWalletNonce };

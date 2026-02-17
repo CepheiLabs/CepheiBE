@@ -21,5 +21,7 @@ export const rafflesTable = pgTable("raffles", {
   winnerId: uuid("winner_id").references(() => playersTable.id),
   txHash: varchar("tx_hash", { length: 255 }),
   endsAt: timestamp("ends_at").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });

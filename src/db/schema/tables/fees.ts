@@ -10,5 +10,7 @@ export const feesTable = pgTable("fees", {
   id: uuid("id").primaryKey().defaultRandom(),
   amount: decimal("amount", { precision: 32, scale: 18 }).notNull(),
   sourceContract: varchar("source_contract", { length: 255 }),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });

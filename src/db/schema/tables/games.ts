@@ -23,5 +23,7 @@ export const gamesTable = pgTable("games", {
   winnerId: uuid("winner_id").references(() => playersTable.id),
   gameData: jsonb("game_data").default({}).notNull(),
   txHash: varchar("tx_hash", { length: 255 }).unique(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });

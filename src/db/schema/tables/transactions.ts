@@ -20,7 +20,9 @@ export const transactionsTable = pgTable(
     type: transactionTypeEnum("tx_type").notNull(),
     amount: decimal("amount", { precision: 32, scale: 18 }).notNull(),
     txHash: varchar("tx_hash", { length: 255 }).unique(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => [
     index("player_id_idx").on(table.playerId), //For quick look up of a player

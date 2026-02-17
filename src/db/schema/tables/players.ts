@@ -30,6 +30,8 @@ export const playersTable = pgTable(
     })
       .default("0")
       .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }),
+    // updatedAt: timestamp("updated_at", { withTimezone: true }),
   },
   (table) => [
     index("wins_idx").on(table.totalWins), //For (Quick lookup) leaderboards based on wins
