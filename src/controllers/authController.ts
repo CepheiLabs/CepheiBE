@@ -241,7 +241,7 @@ const verifyWallet = handleAsync(
     }
 
     // 3. Reconstructing message (FIXED: Added \n\n to match getWalletNonce)
-    const message = `Welcome to Cephi! Sign this message to verify ownership. \n\nNonce: ${savedNonce}`;
+    const message = `Welcome to Cephi! Sign this message to verify ownership. Nonce: ${savedNonce}`;
 
     // 4. Recovering address
     let recoveredAddress: string;
@@ -264,6 +264,7 @@ const verifyWallet = handleAsync(
     });
 
     const currentUserId = req.user?.id;
+    console.log(`user: ${currentUserId}`);
 
     // 8. CASE A: Linking to an existing session (Email user connecting wallet)
     if (currentUserId) {

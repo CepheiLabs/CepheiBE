@@ -4,7 +4,9 @@ import {
   login,
   logout,
   getWalletNonce,
+  verifyWallet,
 } from "../controllers/authController";
+import { identify } from "../middlewares/authHandler";
 
 const router = Router();
 
@@ -12,6 +14,7 @@ router.post("/register", registerPlayer);
 router.post("/login", login);
 router.post("/logout", logout);
 router.post("/wallet/nonce", getWalletNonce);
+router.post("/wallet/verify", identify, verifyWallet);
 
 export default router;
 
