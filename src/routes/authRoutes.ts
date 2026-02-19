@@ -164,3 +164,109 @@ export default router;
  *       500:
  *         description: Internal server error
  */
+
+/**
+ * @swagger
+ * /api/v1/auth/wallet/nonce:
+ *   post:
+ *     summary: Generate a wallet signature nonce
+ *     tags:
+ *       - Wallet Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - address
+ *             properties:
+ *               address:
+ *                 type: string
+ *                 example: Use Your own !!!
+ *     responses:
+ *       200:
+ *         description: Nonce generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     nonce:
+ *                       type: string
+ *                       example: a1b2c3d4e5f6
+ *                     message:
+ *                       type: string
+ *                       example: Welcome to Cephi! Sign this message to verify ownership...
+ *       400:
+ *         description: Invalid wallet address
+ */
+
+/**
+ * @swagger
+ * /api/v1/auth/wallet/verify:
+ *   post:
+ *     summary: Verify wallet signature and link/login player
+ *     tags:
+ *       - Wallet Auth
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - address
+ *               - signature
+ *             properties:
+ *               address:
+ *                 type: string
+ *                 example: Use your own !!!
+ *               signature:
+ *                 type: string
+ *                 example: 0xabcdef1234567890...
+ *     responses:
+ *       200:
+ *         description: Wallet verified successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Wallet verified successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     player:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         email:
+ *                           type: string
+ *                         username:
+ *                           type: string
+ *                         walletAddress:
+ *                           type: string
+ *                     accessToken:
+ *                       type: string
+ *       400:
+ *         description: Invalid signature or nonce
+ *       409:
+ *         description: Wallet already linked to another account
+ *       500:
+ *         description: Server error
+ */
