@@ -1,13 +1,9 @@
 import { Router } from "express";
-import {
-  registerPlayer,
-  login,
-  logout,
-  getWalletNonce,
-  verifyWallet,
-  googleSignin,
-} from "../controllers/authController";
+import { registerPlayer, login, logout } from "../controllers/authController";
 import { identify } from "../middlewares/authHandler";
+
+import { getWalletNonce, verifyWallet } from "../controllers/walletController";
+import { googleSignin } from "../controllers/googleController";
 
 const router = Router();
 
