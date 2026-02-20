@@ -61,3 +61,5 @@ const startServer = async () => {
 };
 
 startServer();
+
+// TODO: NEXT UP IS PLAYER CONTROLLER WITH GET/ME PATCH/UPDATE_USERNAME AND GET/STATS

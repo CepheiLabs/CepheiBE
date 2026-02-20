@@ -19,6 +19,9 @@ import { signToken } from "../utils/jwt";
 import { redisClient } from "../utils/redis";
 import googleAuthClient from "../utils/googleAuthCient";
 
+import { findByEmailOrUsername, createPlayer } from "../services/playerService";
+import { sendAuthResponse } from "../utils/authResponse";
+
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || "10", 10);
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
@@ -32,69 +35,30 @@ if (!GOOGLE_CLIENT_ID) {
  * @access  Public
  */
 const registerPlayer = handleAsync(async (req: Request, res: Response) => {
-  // 1. Validate User
   const result = registrationSchema.safeParse(req.body);
   if (!result.success)
     throw new ValidationError(
-      "Invalid input data",
+      "Invalid data",
       result.error.flatten().fieldErrors,
     );
 
   const { email, username, password, avatarUrl } = result.data;
 
-  // 2. Check for existing User
-  const existingPlayer = await db
-    .select()
-    .from(playersTable)
-    .where(
-      or(eq(playersTable.email, email), eq(playersTable.username, username)),
-    )
-    .limit(1);
+  // 1. Use Service
+  const existing = await findByEmailOrUsername(email, username);
+  if (existing) throw new ConflictError("Email or username already exists");
 
-  if (existingPlayer.length > 0) {
-    throw new ConflictError("Email or username already exists");
-  }
-
-  // 3. Hash password to store in DB
+  // 2. Hash and Create
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+  const newPlayer = await createPlayer({
+    email,
+    username,
+    password: hashedPassword,
+    avatarUrl,
+  });
 
-  const [newPlayer] = await db
-    .insert(playersTable)
-    .values({
-      email,
-      username,
-      password: hashedPassword,
-      ...(avatarUrl && { avatarUrl }),
-    })
-    .returning({
-      id: playersTable.id,
-      email: playersTable.email,
-      username: playersTable.username,
-    });
-
-  if (!newPlayer)
-    throw new InternalServerError("Something went wrong while registering");
-
-  const token = signToken(newPlayer.id);
-
-  // 4. Store token and send response
-  res
-    .status(201)
-    .cookie("accessToken", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000, //one day
-      path: "/",
-    })
-    .json({
-      status: "success",
-      message: "Player registered successfully",
-      data: {
-        player: newPlayer,
-        accessToken: token,
-      },
-    });
+  // 3. Use Utility
+  sendAuthResponse(res, newPlayer, 201, "Player registered successfully");
 });
 
 /**
