@@ -5,7 +5,7 @@ import googleAuthClient from "../utils/googleAuthCient";
 import { db } from "../db";
 import { playersTable } from "../db/schema";
 import { ValidationError, InternalServerError } from "../errors";
-import type { Player } from "../@types/players"; // Reuse your Player type
+import type { Player } from "../@types"; // Reuse your Player type
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 

@@ -2,7 +2,7 @@ import { eq, or } from "drizzle-orm";
 import { db } from "../db";
 import { playersTable } from "../db/schema";
 import { InternalServerError } from "../errors";
-import type { Player, NewPlayer, PlayerUpdate } from "../@types/players";
+import type { Player, NewPlayer, PlayerUpdate } from "../@types";
 
 // TYPES
 
