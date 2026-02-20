@@ -7,6 +7,10 @@ import { db } from "../db";
 import { playersTable } from "../db/schema";
 import { ValidationError, ConflictError, InternalServerError } from "../errors";
 
+/**
+ *
+ * @desc generates a nonce and sends to the redis store
+ */
 export const generateAndSaveNonce = async (
   address: string,
 ): Promise<string> => {
@@ -23,17 +27,26 @@ export const generateAndSaveNonce = async (
   return nonce;
 };
 
+/**
+ * @desc gets nonce from redis store
+ */
 export const getNonceFromStore = async (
   address: string,
 ): Promise<string | null> => {
   return await redisClient.get(`nonce:${address.toLowerCase()}`);
 };
 
+/**
+ * @desc deletes nonce from the redis store
+ */
 export const deleteNonceFromStore = async (address: string): Promise<void> => {
   await redisClient.del(`nonce:${address.toLowerCase()}`);
 };
 
 // Helper to verify the actual crypto signature
+/**
+ * @desc verifies signature against address
+ */
 export const verifySignature = async (address: string, signature: string) => {
   const normalizedAddress = address.toLowerCase();
   const savedNonce = await getNonceFromStore(normalizedAddress);
@@ -58,6 +71,9 @@ export const verifySignature = async (address: string, signature: string) => {
 };
 
 // Helper to handle the DB logic (Linking vs New Guest)
+/**
+ * @desc Links wallet if there is an identity, else does a guest login with wallet
+ */
 export const handlePlayerWalletLink = async (
   address: string,
   currentUserId?: string,
