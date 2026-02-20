@@ -5,6 +5,7 @@ import {
   logout,
   getWalletNonce,
   verifyWallet,
+  googleSignin,
 } from "../controllers/authController";
 import { identify } from "../middlewares/authHandler";
 
@@ -15,6 +16,7 @@ router.post("/login", login);
 router.post("/logout", logout);
 router.post("/wallet/nonce", getWalletNonce);
 router.post("/wallet/verify", identify, verifyWallet);
+router.post("/google/signin", googleSignin);
 
 export default router;
 
@@ -269,4 +271,61 @@ export default router;
  *         description: Wallet already linked to another account
  *       500:
  *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/auth/google:
+ *   post:
+ *     summary: Sign in or register a player using Google ID token
+ *     tags:
+ *       - Google Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - idToken
+ *             properties:
+ *               idToken:
+ *                 type: string
+ *                 description: Google OAuth ID token
+ *                 example: use yours from your google auth playground
+ *     responses:
+ *       200:
+ *         description: Google authentication successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Successfully logged in with google
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     player:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         email:
+ *                           type: string
+ *                         username:
+ *                           type: string
+ *                         walletAddress:
+ *                           type: string
+ *                           nullable: true
+ *                     accessToken:
+ *                       type: string
+ *       400:
+ *         description: Invalid Google token data
+ *       500:
+ *         description: Server error while processing Google authentication
  */

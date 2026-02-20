@@ -19,7 +19,8 @@ export const protect = handleAsync(async (req, res, next) => {
 
 // 2. THE SOFT
 export const identify = handleAsync(async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const token =
+    req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
 
   if (token) {
     try {

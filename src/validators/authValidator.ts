@@ -48,3 +48,7 @@ export const walletVerifySchema = z.object({
     .min(130, "Signature is too short")
     .startsWith("0x", "Signature must be in hex format"),
 });
+
+export const googleSigninSchema = z.object({
+  idToken: z.string().trim(),
+});

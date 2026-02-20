@@ -3,9 +3,11 @@ import type { NextFunction, Request, Response } from "express";
 import { or, eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import crypto from "node:crypto";
+import { verifyMessage } from "ethers";
 
 import { db } from "../db";
 import {
+  googleSigninSchema,
   loginSchema,
   registrationSchema,
   walletNonceSchema,
@@ -15,9 +17,14 @@ import { ConflictError, InternalServerError, ValidationError } from "../errors";
 import { playersTable } from "../db/schema";
 import { signToken } from "../utils/jwt";
 import { redisClient } from "../utils/redis";
-import { verifyMessage } from "ethers";
+import googleAuthClient from "../utils/googleAuthCient";
 
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || "10", 10);
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+
+if (!GOOGLE_CLIENT_ID) {
+  throw new InternalServerError("Env config issues!!!");
+}
 
 /**
  * @desc    Register player & get token
@@ -316,4 +323,101 @@ const verifyWallet = handleAsync(
       });
   },
 );
-export { registerPlayer, login, logout, getWalletNonce, verifyWallet };
+
+/**
+ * @desc    Sign in with google
+ * @route   POST /api/v1/auth/google/login
+ * @access  Public
+ */
+
+const googleSignin = handleAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    // 1. Validate
+    const result = googleSigninSchema.safeParse(req.body);
+    if (!result.success)
+      throw new ValidationError(
+        "Invalid google token data",
+        result.error.flatten().fieldErrors,
+      );
+
+    const { idToken } = result.data;
+
+    // 2. Verify with google
+    const ticket = await googleAuthClient.verifyIdToken({
+      idToken,
+      audience: GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email)
+      throw new ValidationError("Google token valid but missing email");
+
+    // 3. Extract
+    const { email, sub: googleId, name, picture } = payload;
+
+    // 4. Find or create from DB
+    let player = await db.query.playersTable.findFirst({
+      where: eq(playersTable.email, email),
+    });
+
+    if (!player) {
+      // Insert new player
+      const [newPlayer] = await db
+        .insert(playersTable)
+        .values({
+          email,
+          googleId,
+          username: name || `player_${googleId.slice(0, 5)}`,
+          avatarUrl: picture,
+        })
+        .returning();
+      player = newPlayer;
+    } else if (!player.googleId) {
+      // Existing Player update
+      const [updatedPlayer] = await db
+        .update(playersTable)
+        .set({ googleId, avatarUrl: player.avatarUrl || picture })
+        .where(eq(playersTable.id, player.id))
+        .returning();
+      player = updatedPlayer;
+    }
+
+    if (!player)
+      throw new InternalServerError("Failed to process Google account");
+
+    // 5. Issue token
+    const accessToken = signToken(player.id);
+
+    // 6. Send res + cookies
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .json({
+        status: "success",
+        message: "Successfully logged in with google",
+        data: {
+          player: {
+            id: player.id,
+            email: player.email,
+            username: player.username,
+            walletAddress: player.walletAddress,
+          },
+          accessToken,
+        },
+      });
+  },
+);
+
+export {
+  registerPlayer,
+  login,
+  logout,
+  getWalletNonce,
+  verifyWallet,
+  googleSignin,
+};
