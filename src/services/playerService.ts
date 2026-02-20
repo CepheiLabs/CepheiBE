@@ -29,3 +29,12 @@ export const updatePlayer = async (id: string, values: any) => {
     .returning();
   return player;
 };
+
+export const findByEmail = async (email: string) => {
+  const [player] = await db
+    .select()
+    .from(playersTable)
+    .where(eq(playersTable.email, email))
+    .limit(1);
+  return player;
+};

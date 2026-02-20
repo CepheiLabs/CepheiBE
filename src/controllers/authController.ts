@@ -19,7 +19,11 @@ import { signToken } from "../utils/jwt";
 import { redisClient } from "../utils/redis";
 import googleAuthClient from "../utils/googleAuthCient";
 
-import { findByEmailOrUsername, createPlayer } from "../services/playerService";
+import {
+  findByEmailOrUsername,
+  createPlayer,
+  findByEmail,
+} from "../services/playerService";
 import { sendAuthResponse } from "../utils/authResponse";
 
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || "10", 10);
@@ -67,22 +71,20 @@ const registerPlayer = handleAsync(async (req: Request, res: Response) => {
  * @access  Public
  */
 const login = handleAsync(async (req: Request, res: Response) => {
-  // 1. Validate User
+  // 1. Validate Input
   const result = loginSchema.safeParse(req.body);
-  if (!result.success)
+  if (!result.success) {
     throw new ValidationError(
       "Invalid input data",
       result.error.flatten().fieldErrors,
     );
+  }
 
   const { email, password } = result.data;
 
-  // 2. Check if player exists
-  const [player] = await db
-    .select()
-    .from(playersTable)
-    .where(eq(playersTable.email, email))
-    .limit(1);
+  // 2. Find Player via Service
+  // We'll add findByEmail to playerService.ts
+  const player = await findByEmail(email);
 
   if (!player || !player.password) {
     throw new ValidationError("Invalid email or password");
@@ -90,35 +92,13 @@ const login = handleAsync(async (req: Request, res: Response) => {
 
   // 3. Compare hashed passwords
   const isMatch = await bcrypt.compare(password, player.password);
-
   if (!isMatch) {
     throw new ValidationError("Invalid email or password");
   }
 
-  const accessToken = signToken(player.id);
-
-  // 4. Store token and send response
-  res
-    .status(200)
-    .cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000, //one day
-      path: "/",
-    })
-    .json({
-      status: "success",
-      message: "Player logged in successfully",
-      data: {
-        player: {
-          id: player.id,
-          email: player.email,
-          username: player.username,
-        },
-        accessToken: accessToken,
-      },
-    });
+  // 4. Send Response via Utility
+  // This handles the signToken, res.status, res.cookie, and res.json in one go!
+  sendAuthResponse(res, player, 200, "Player logged in successfully");
 });
 
 /**
