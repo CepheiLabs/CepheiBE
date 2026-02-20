@@ -7,6 +7,10 @@ import { ValidationError, InternalServerError } from "../errors";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 
+/**
+ * @desc Verifies google token gotten from the client
+ * @param idToken token string gotten from the client
+ */
 export const verifyGoogleToken = async (idToken: string) => {
   const ticket = await googleAuthClient.verifyIdToken({
     idToken,
@@ -21,6 +25,10 @@ export const verifyGoogleToken = async (idToken: string) => {
   return payload; // { email, sub, name, picture, etc. }
 };
 
+/**
+ * @desc finds a player by email, on failure, will create one using google credentials
+ * @param payload the credentials gotten from google
+ */
 export const findOrCreateGooglePlayer = async (payload: any) => {
   const { email, sub: googleId, name, picture } = payload;
 
