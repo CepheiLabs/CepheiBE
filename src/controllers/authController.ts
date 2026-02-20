@@ -11,13 +11,8 @@ import {
   walletNonceSchema,
   walletVerifySchema,
 } from "../validators";
-import {
-  ConflictError,
-  InternalServerError,
-  UnauthorizedError,
-  ValidationError,
-} from "../errors";
-import { playersRelations, playersTable } from "../db/schema";
+import { ConflictError, InternalServerError, ValidationError } from "../errors";
+import { playersTable } from "../db/schema";
 import { signToken } from "../utils/jwt";
 import { redisClient } from "../utils/redis";
 import { verifyMessage } from "ethers";
