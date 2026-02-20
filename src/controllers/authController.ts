@@ -4,7 +4,6 @@ import bcrypt from "bcrypt";
 
 import { loginSchema, registrationSchema } from "../validators";
 import { ConflictError, InternalServerError, ValidationError } from "../errors";
-
 import * as playerService from "../services/playerService";
 import { logoutCookieOptions, sendAuthResponse } from "../utils/authResponse";
 
