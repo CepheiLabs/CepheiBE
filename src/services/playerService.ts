@@ -3,6 +3,7 @@ import { db } from "../db";
 import { playersTable } from "../db/schema";
 import { InternalServerError } from "../errors";
 import type { Player, NewPlayer, PlayerUpdate } from "../@types";
+import { handleDbError } from "../errors/handleDbError";
 
 // TYPES
 
@@ -45,7 +46,8 @@ export const updatePlayer = async (
     .update(playersTable)
     .set(values)
     .where(eq(playersTable.id, id))
-    .returning();
+    .returning()
+    .catch(handleDbError);
   return player;
 };
 
