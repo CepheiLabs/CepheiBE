@@ -34,7 +34,7 @@ export const verifyGoogleToken = async (
 export const findOrCreateGooglePlayer = async (
   payload: TokenPayload,
 ): Promise<Player> => {
-  const { email, sub: googleId, name, picture } = payload;
+  const { email, sub: googleId, given_name, picture } = payload;
 
   // email is definitely here because of our check in verifyGoogleToken
   const targetEmail = email!;
@@ -50,7 +50,9 @@ export const findOrCreateGooglePlayer = async (
       .values({
         email: targetEmail,
         googleId,
-        username: name || `player_${googleId.slice(0, 5)}`,
+        username: given_name
+          ? `${given_name?.toLowerCase()}_${googleId.slice(0, 5)}`
+          : `$player_${googleId.slice(0, 5)}`,
         avatarUrl: picture,
       })
       .returning();
