@@ -3,11 +3,13 @@ import type { Express } from "express";
 import { setupSwagger } from "./utils/setUpSwagger";
 import helmet from "helmet";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 
 import logger from "./utils/logger";
 
 import authRouter from "./routes/authRoutes";
+import playerRouter from "./routes/playerRoutes";
 import errorHandler from "./middlewares/errorHandler";
 import { connectRedis } from "./utils/redis";
 
@@ -40,9 +42,11 @@ const authLimiter = rateLimit({
 });
 
 app.use(express.json());
+app.use(cookieParser());
 
 // *️⃣*️⃣APPLICATION ROUTES*️⃣*️⃣
 app.use("/api/v1/auth", authLimiter, authRouter);
+app.use("/api/v1/player", playerRouter);
 
 setupSwagger(app);
 

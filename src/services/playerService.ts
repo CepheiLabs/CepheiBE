@@ -64,13 +64,15 @@ export const findByEmail = async (
 };
 
 /**
- * @desc finds a player by ID (Essential for getMe)
+ * @desc Finds a player by ID with sensitive fields removed by default
  */
-export const findById = async (id: string): Promise<Player | undefined> => {
-  const [player] = await db
-    .select()
-    .from(playersTable)
-    .where(eq(playersTable.id, id))
-    .limit(1);
-  return player;
+export const findById = async (id: string, includeSensitive = false) => {
+  return await db.query.playersTable.findFirst({
+    where: eq(playersTable.id, id),
+    columns: {
+      password: includeSensitive,
+      googleId: includeSensitive,
+      // You can add other internal fields here too
+    },
+  });
 };
