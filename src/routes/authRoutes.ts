@@ -22,7 +22,7 @@ export default router;
  *   post:
  *     summary: Register a new player
  *     tags:
- *       - Players
+ *       - Auth
  *     requestBody:
  *       required: true
  *       content:
@@ -84,7 +84,7 @@ export default router;
  *   post:
  *     summary: Log in a player
  *     tags:
- *       - Players
+ *       - Auth
  *     requestBody:
  *       required: true
  *       content:
@@ -144,7 +144,7 @@ export default router;
  *   post:
  *     summary: Log out the current player
  *     tags:
- *       - Players
+ *       - Auth
  *     responses:
  *       200:
  *         description: Player logged out successfully

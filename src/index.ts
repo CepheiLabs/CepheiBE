@@ -46,7 +46,7 @@ app.use(cookieParser());
 
 // *️⃣*️⃣APPLICATION ROUTES*️⃣*️⃣
 app.use("/api/v1/auth", authLimiter, authRouter);
-app.use("/api/v1/player", playerRouter);
+app.use("/api/v1/players", playerRouter);
 
 setupSwagger(app);
 
