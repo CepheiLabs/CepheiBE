@@ -13,6 +13,7 @@ import playerRouter from "./routes/playerRoutes";
 import errorHandler from "./middlewares/errorHandler";
 import { connectRedis } from "./utils/redis";
 import { sendTestMail } from "./services/mailService";
+import { startCleanUpJob } from "./jobs";
 
 const PORT = 5000;
 const app: Express = express();
@@ -64,9 +65,8 @@ const startServer = async () => {
     logger.warn("Add wallet address to JWT for some routes auth...");
   });
 
+  startCleanUpJob();
   sendTestMail();
 };
 
 startServer();
-
-// TODO: NEXT UP IS PLAYER CONTROLLER WITH GET/ME PATCH/UPDATE_USERNAME AND GET/STATS

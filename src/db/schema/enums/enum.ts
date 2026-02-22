@@ -12,6 +12,11 @@ export const gameCategoryEnum = pgEnum("game_category", [
   "DICE_ROLL",
 ]);
 
+export const tokenPurposeEnum = pgEnum("token_purpose", [
+  "RESET",
+  "VERIFY_EMAIL",
+]);
+
 export const transactionTypeEnum = pgEnum("tx_type", ["DEPOSIT", "WITHDRAWAL"]);
 
 export const raffleStatusEnum = pgEnum("raffle_status", ["OPEN", "CLOSE"]);
