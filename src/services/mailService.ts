@@ -47,7 +47,7 @@ export const sendPasswordResetEmail = async (
   token: string,
 ) => {
   // Use your env for the frontend URL
-  const resetUrl = `${process.env.FRONTEND_URL}/api/v1/reset-password?token=${token}`;
+  const resetUrl = `${process.env.FRONTEND_URL}/api/v1/auth/reset-password?token=${token}`;
 
   const mailOptions = {
     from: `"Cephi Admin" <${FROM_EMAIL}>`,
