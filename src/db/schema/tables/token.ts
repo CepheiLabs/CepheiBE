@@ -5,9 +5,11 @@ import {
   timestamp,
   boolean,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { playersTable } from "./tables";
 import { tokenPurposeEnum } from "../enums/enum";
+import { sql } from "drizzle-orm";
 
 export const tokensTable = pgTable(
   "tokens",
@@ -20,5 +22,10 @@ export const tokensTable = pgTable(
     used: boolean("has_been_used").default(false),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => [index("token_purpose_index").on(table.playerId, table.purpose)],
+  (table) => [
+    index("token_purpose_index").on(table.playerId, table.purpose),
+    uniqueIndex("active_token_unique")
+      .on(table.playerId, table.purpose)
+      .where(sql`used=false`),
+  ],
 );
