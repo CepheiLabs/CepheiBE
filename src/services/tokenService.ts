@@ -51,11 +51,21 @@ export const createPasswordResetToken = async (playerId: string) => {
 export const validateResetToken = async (token: string) => {
   const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
-  return await db.query.tokensTable.findFirst({
+  const record = await db.query.tokensTable.findFirst({
     where: and(
       eq(tokensTable.tokenHash, tokenHash),
       eq(tokensTable.used, false),
       gt(tokensTable.expiresAt, new Date()),
     ),
   });
+
+  if (!record) return null;
+
+  // Burn it to hell ❤️‍🔥❤️‍🔥❤️‍🔥
+  await db
+    .update(tokensTable)
+    .set({ used: true })
+    .where(eq(tokensTable.id, record.id));
+
+  return record;
 };
