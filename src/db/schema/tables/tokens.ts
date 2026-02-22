@@ -19,7 +19,7 @@ export const tokensTable = pgTable(
     tokenHash: varchar("token_hash", { length: 255 }).unique(),
     purpose: tokenPurposeEnum("purpose").notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
-    used: boolean("has_been_used").default(false),
+    used: boolean("used").default(false),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [

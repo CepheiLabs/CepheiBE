@@ -13,7 +13,7 @@ export const gameCategoryEnum = pgEnum("game_category", [
 ]);
 
 export const tokenPurposeEnum = pgEnum("token_purpose", [
-  "RESET",
+  "PASSWORD_RESET",
   "VERIFY_EMAIL",
 ]);
 

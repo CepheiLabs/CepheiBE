@@ -2,7 +2,7 @@ import handleAsync from "express-async-handler";
 import type { Request, Response } from "express";
 import { UnauthorizedError, ValidationError } from "../errors";
 import * as playerService from "../services/playerService";
-import { updateUsernameSchema } from "../validators/playerValidator";
+import { updateUsernameSchema } from "../validators";
 
 /**
  * @desc Get details of the logged in player

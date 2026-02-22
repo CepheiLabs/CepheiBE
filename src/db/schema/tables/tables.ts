@@ -3,7 +3,7 @@ import { gamesTable } from "./games";
 import { rafflesTable } from "./raffles";
 import { transactionsTable } from "./transactions";
 import { feesTable } from "./fees";
-import { tokensTable } from "./token";
+import { tokensTable } from "./tokens";
 
 export {
   playersTable,
