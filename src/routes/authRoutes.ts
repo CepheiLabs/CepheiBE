@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { registerPlayer, login, logout } from "../controllers/authController";
+import {
+  registerPlayer,
+  login,
+  logout,
+  requestPasswordReset,
+  resetPassword,
+} from "../controllers/authController";
 import { identify } from "../middlewares/authHandler";
 
 import { getWalletNonce, verifyWallet } from "../controllers/walletController";
@@ -13,6 +19,8 @@ router.post("/logout", logout);
 router.post("/wallet/nonce", getWalletNonce);
 router.post("/wallet/verify", identify, verifyWallet);
 router.post("/google/signin", googleSignin);
+router.post("/request-reset", requestPasswordReset);
+router.post("/reset-password", resetPassword);
 
 export default router;
 

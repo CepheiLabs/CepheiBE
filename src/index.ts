@@ -66,7 +66,7 @@ const startServer = async () => {
   });
 
   startCleanUpJob();
-  sendTestMail();
+  // sendTestMail();
 };
 
 startServer();

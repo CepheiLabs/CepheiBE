@@ -2,9 +2,21 @@ import handleAsync from "express-async-handler";
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
-import { loginSchema, registrationSchema } from "../validators";
-import { ConflictError, InternalServerError, ValidationError } from "../errors";
+import {
+  resetPasswordSchema,
+  loginSchema,
+  registrationSchema,
+  requestTokenSchema,
+} from "../validators";
+import {
+  BadRequestError,
+  ConflictError,
+  InternalServerError,
+  ValidationError,
+} from "../errors";
 import * as playerService from "../services/playerService";
+import * as tokenService from "../services/tokenService";
+import * as mailService from "../services/mailService";
 import { logoutCookieOptions, sendAuthResponse } from "../utils/authResponse";
 
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || "10", 10);
@@ -93,4 +105,73 @@ const logout = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
-export { registerPlayer, login, logout };
+/**
+ * @desc Request a reset password reset
+ * @route POST /api/v1/auth/request-reset
+ * @access Public
+ */
+const requestPasswordReset = handleAsync(
+  async (req: Request, res: Response) => {
+    // 1. Validate
+    const result = requestTokenSchema.safeParse(req.body);
+    if (!result.success)
+      throw new ValidationError(
+        "Invalid data!!!",
+        result.error.flatten().fieldErrors,
+      );
+    const { email } = result.data;
+
+    // 2. Find player by email
+    const player = await playerService.findByEmail(email);
+
+    // 3. Logic Check: Only proceed if player exists AND has a password
+    // If player.password is null, they are a Google/OAuth user.
+    if (player && player.password !== null) {
+      const resetToken = await tokenService.createPasswordResetToken(player.id);
+
+      await mailService.sendPasswordResetEmail(
+        email,
+        player.username!,
+        resetToken,
+      );
+    }
+
+    res.status(200).json({
+      status: "success",
+      message:
+        "If an account with a password exists, a reset link has been sent 🫰.",
+    });
+  },
+);
+
+/**
+ * @desc changes password to the new password
+ */
+const resetPassword = handleAsync(async (req: Request, res: Response) => {
+  // 1. Validate
+  const result = resetPasswordSchema.safeParse({
+    token: req.query.token,
+    ...req.body,
+  });
+  if (!result.success)
+    throw new ValidationError(
+      "Invalid password reset data!!!",
+      result.error.flatten().fieldErrors,
+    );
+  const { token, newPassword } = result.data;
+  // 2. verify and burn token
+  const tokenRecord = await tokenService.validateResetToken(token);
+  if (!tokenRecord) throw new BadRequestError("Reset link invalid or expired");
+
+  // 3. update password
+  await playerService.updatePassword(tokenRecord.playerId!, newPassword);
+
+  // 4. Sending resss.......
+  res.status(200).json({
+    status: "success",
+    message:
+      "Password updated successfully! You can now log in with your new credentials.",
+  });
+});
+
+export { registerPlayer, login, logout, requestPasswordReset, resetPassword };

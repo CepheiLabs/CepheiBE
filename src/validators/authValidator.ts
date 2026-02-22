@@ -66,7 +66,7 @@ export const requestTokenSchema = z.object({
   email: z.email("Please provide an email"),
 });
 
-export const changePasswordSchema = z.object({
+export const resetPasswordSchema = z.object({
   token: z.string(),
   newPassword: z.string().min(8, "Password must be at least 8 characters"),
 });

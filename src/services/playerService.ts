@@ -1,4 +1,5 @@
 import { eq, or } from "drizzle-orm";
+import bcrypt from "bcrypt";
 import { db } from "../db";
 import { playersTable } from "../db/schema";
 import { InternalServerError } from "../errors";
@@ -77,4 +78,21 @@ export const findById = async (id: string, includeSensitive = false) => {
       // You can add other internal fields here too
     },
   });
+};
+
+/**
+ * @desc Hashes and updates a player's password
+ * @param playerId - The UUID of the player
+ * @param newPassword - The plain text password
+ */
+export const updatePassword = async (playerId: string, newPassword: string) => {
+  // 1. Hash the password
+  const salt = await bcrypt.genSalt(12);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  // 2. Update DB
+  await db
+    .update(playersTable)
+    .set({ password: hashedPassword })
+    .where(eq(playersTable.id, playerId));
 };
