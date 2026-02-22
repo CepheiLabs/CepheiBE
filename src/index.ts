@@ -12,6 +12,7 @@ import authRouter from "./routes/authRoutes";
 import playerRouter from "./routes/playerRoutes";
 import errorHandler from "./middlewares/errorHandler";
 import { connectRedis } from "./utils/redis";
+import { sendTestMail } from "./utils/sendTestMail";
 
 const PORT = 5000;
 const app: Express = express();
@@ -62,6 +63,8 @@ const startServer = async () => {
     logger.warn("Remember to change auth rate limiting from 200 requests...");
     logger.warn("Add wallet address to JWT for some routes auth...");
   });
+
+  sendTestMail("imafidonemmanuel004@gmail.com");
 };
 
 startServer();
