@@ -69,4 +69,6 @@ const startServer = async () => {
   // sendTestMail();
 };
 
+// TODO: DOCUMENT WITH SWAGGER REQUEST TOKEN AND RESET PASSWORD
+
 startServer();
