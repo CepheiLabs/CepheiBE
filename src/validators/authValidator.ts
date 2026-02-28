@@ -70,3 +70,7 @@ export const resetPasswordSchema = z.object({
   token: z.string(),
   newPassword: z.string().min(8, "Password must be at least 8 characters"),
 });
+
+export const verifyEmailSchema = z.object({
+  token: z.string(),
+});

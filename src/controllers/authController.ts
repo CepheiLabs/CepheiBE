@@ -7,17 +7,20 @@ import {
   loginSchema,
   registrationSchema,
   requestTokenSchema,
+  verifyEmailSchema,
 } from "../validators";
 import {
   BadRequestError,
   ConflictError,
   InternalServerError,
+  UnauthorizedError,
   ValidationError,
 } from "../errors";
 import * as playerService from "../services/playerService";
 import * as tokenService from "../services/tokenService";
 import * as mailService from "../services/mailService";
 import { logoutCookieOptions, sendAuthResponse } from "../utils/authResponse";
+import { tokensTable } from "../db/schema";
 
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || "10", 10);
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -134,6 +137,10 @@ const requestPasswordReset = handleAsync(
         player.username!,
         resetToken,
       );
+    } else {
+      throw new BadRequestError(
+        "Cannot send mail for a player without a password",
+      );
     }
 
     res.status(200).json({
@@ -160,7 +167,7 @@ const resetPassword = handleAsync(async (req: Request, res: Response) => {
     );
   const { token, newPassword } = result.data;
   // 2. verify and burn token
-  const tokenRecord = await tokenService.validateResetToken(token);
+  const tokenRecord = await tokenService.validateToken(token);
   if (!tokenRecord) throw new BadRequestError("Reset link invalid or expired");
 
   // 3. update password
@@ -174,4 +181,88 @@ const resetPassword = handleAsync(async (req: Request, res: Response) => {
   });
 });
 
-export { registerPlayer, login, logout, requestPasswordReset, resetPassword };
+const requestEmailVerification = handleAsync(
+  async (req: Request, res: Response) => {
+    // 1. Get ID from req.user
+    const player = req.user;
+    if (!player || !player.id)
+      throw new UnauthorizedError(
+        "You are not allowed access to this resource",
+      );
+    const playerId = player.id;
+
+    // 2. Get player data
+    const playerData = await playerService.findById(playerId);
+
+    // 3. Send mail with token url
+    if (playerData && playerData.email) {
+      const emailVerificationToken =
+        await tokenService.createEmailVerificationToken(player.id);
+
+      await mailService.sendEmailVerificationEmail(
+        playerData.email,
+        playerData.username!,
+        emailVerificationToken,
+      );
+    } else {
+      throw new BadRequestError(
+        "Cannot send verification mail for a wallet user",
+      );
+    }
+
+    // 4. Sending resss.......
+    res.status(200).json({
+      status: "success",
+      message: "Verification mail sent successfully.",
+    });
+  },
+);
+
+/**
+ * @desc Step 2: Handle the email link click with redirection
+ * @route GET /api/v1/auth/verify-email
+ */
+const verifyEmail = handleAsync(async (req: Request, res: Response) => {
+  // 1. Validate
+  const result = verifyEmailSchema.safeParse({ token: req.query.token });
+  if (!result.success)
+    throw new ValidationError(
+      "Invalid token format",
+      result.error.flatten().fieldErrors,
+    );
+  const { token } = result.data;
+
+  if (!token) {
+    throw new BadRequestError("No token present");
+  }
+
+  // 2. Check for token record
+  const tokenRecord = await tokenService.validateToken(token);
+  if (!tokenRecord) {
+    throw new BadRequestError("Token invalid or expired");
+  }
+
+  // 3. Update player token status if all goes well
+  await playerService.markAsVerified(tokenRecord.playerId!);
+
+  // 4. The Redirection
+  /* const successUrl = `${process.env.FRONTEND_URL}/verification-success`;
+    return res.redirect(successUrl); 
+    */
+
+  // 5. Send ress...
+  res.status(200).json({
+    status: "success",
+    message: "Email verified successfully! You can now access Cephi.",
+  });
+});
+
+export {
+  registerPlayer,
+  login,
+  logout,
+  requestPasswordReset,
+  resetPassword,
+  requestEmailVerification,
+  verifyEmail,
+};

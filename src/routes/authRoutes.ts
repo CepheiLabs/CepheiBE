@@ -5,8 +5,10 @@ import {
   logout,
   requestPasswordReset,
   resetPassword,
+  requestEmailVerification,
+  verifyEmail,
 } from "../controllers/authController";
-import { identify } from "../middlewares/authHandler";
+import { identify, protect } from "../middlewares/authHandler";
 
 import { getWalletNonce, verifyWallet } from "../controllers/walletController";
 import { googleSignin } from "../controllers/googleController";
@@ -21,7 +23,8 @@ router.post("/wallet/verify", identify, verifyWallet);
 router.post("/google/signin", googleSignin);
 router.post("/request-reset", requestPasswordReset);
 router.post("/reset-password", resetPassword);
-
+router.get("/request-verification", protect, requestEmailVerification);
+router.get("/verify-email", verifyEmail);
 export default router;
 
 /**
@@ -417,6 +420,74 @@ export default router;
  *                   example: Password updated successfully! You can now log in with your new credentials.
  *       400:
  *         description: Invalid or expired reset token
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/auth/request-verification:
+ *   get:
+ *     summary: Request email verification link
+ *     tags:
+ *       - Email Verification
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Verification email sent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Verification mail sent successfully.
+ *       400:
+ *         description: Cannot send verification mail (e.g. wallet user)
+ *       401:
+ *         description: Unauthorized – user not authenticated
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/auth/verify-email:
+ *   get:
+ *     summary: Verify user email using token
+ *     tags:
+ *       - Email Verification
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email verification token
+ *         example: 3f9c2a8e5d7b4c1a9e0f
+ *     responses:
+ *       200:
+ *         description: Email verified successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Email verified successfully! You can now access Cephi.
+ *       400:
+ *         description: Invalid, expired, or missing token
+ *       422:
+ *         description: Validation error (invalid token format)
  *       500:
  *         description: Server error
  */

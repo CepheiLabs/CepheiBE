@@ -69,8 +69,11 @@ export const findByEmail = async (
 /**
  * @desc Finds a player by ID with sensitive fields removed by default
  */
-export const findById = async (id: string, includeSensitive = false) => {
-  return await db.query.playersTable.findFirst({
+export const findById = async (
+  id: string,
+  includeSensitive = false,
+): Promise<Player | undefined> => {
+  const result = await db.query.playersTable.findFirst({
     where: eq(playersTable.id, id),
     columns: {
       password: includeSensitive,
@@ -78,6 +81,8 @@ export const findById = async (id: string, includeSensitive = false) => {
       // You can add other internal fields here too
     },
   });
+
+  return (result as Player) || undefined;
 };
 
 /**
@@ -87,6 +92,8 @@ export const findById = async (id: string, includeSensitive = false) => {
  */
 export const updatePassword = async (playerId: string, newPassword: string) => {
   // 1. Hash the password
+
+  // NOTE: I did the hashing here, feel free to change if you like
   const salt = await bcrypt.genSalt(12);
   const hashedPassword = await bcrypt.hash(newPassword, salt);
 
@@ -94,5 +101,16 @@ export const updatePassword = async (playerId: string, newPassword: string) => {
   await db
     .update(playersTable)
     .set({ password: hashedPassword })
+    .where(eq(playersTable.id, playerId));
+};
+
+/**
+ * @desc Marks email to be verified
+ * @param playerId - UUID of the player
+ */
+export const markAsVerified = async (playerId: string) => {
+  await db
+    .update(playersTable)
+    .set({ isVerifiedEmail: true })
     .where(eq(playersTable.id, playerId));
 };

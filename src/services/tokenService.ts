@@ -31,9 +31,9 @@ export const createPasswordResetToken = async (playerId: string) => {
     .update(resetToken)
     .digest("hex");
 
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); //15 minutes
 
-  // 3. Insert fresh record (No more 500 errors!)
+  // 3. Insert fresh record
   await db.insert(tokensTable).values({
     playerId,
     tokenHash,
@@ -43,12 +43,13 @@ export const createPasswordResetToken = async (playerId: string) => {
 
   return resetToken;
 };
+
 /**
  * @decs Validates provided token against hashed version in the database
  * @param token the raw token
  * @returns promise
  */
-export const validateResetToken = async (token: string) => {
+export const validateToken = async (token: string) => {
   const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
   const record = await db.query.tokensTable.findFirst({
@@ -68,4 +69,45 @@ export const validateResetToken = async (token: string) => {
     .where(eq(tokensTable.id, record.id));
 
   return record;
+};
+
+/**
+ * @desc Creates an email verification token
+ * @param playerId player id
+ * @returns the verification token
+ */
+// NOTE: I know this is violating the DRY principle but I want to keep one service to do just one thing 👍👍👍👍
+export const createEmailVerificationToken = async (playerId: string) => {
+  // 1. CLEAR THE Bouncer & Invalidate old links
+  // This handles both expired-but-unused tokens AND still-valid tokens.
+  // It clears the path for the unique index 100% of the time.
+  await db
+    .update(tokensTable)
+    .set({ used: true })
+    .where(
+      and(
+        eq(tokensTable.playerId, playerId),
+        eq(tokensTable.purpose, "VERIFY_EMAIL"),
+        eq(tokensTable.used, false),
+      ),
+    );
+
+  // 2. Generate new token
+  const emailVerificationToken = crypto.randomBytes(32).toString("hex");
+  const tokenHash = crypto
+    .createHash("sha256")
+    .update(emailVerificationToken)
+    .digest("hex");
+
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); //24 hours
+
+  // Insert Fresh Records;
+  await db.insert(tokensTable).values({
+    playerId,
+    tokenHash,
+    purpose: "VERIFY_EMAIL",
+    expiresAt,
+  });
+
+  return emailVerificationToken;
 };
