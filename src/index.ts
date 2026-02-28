@@ -67,6 +67,4 @@ const startServer = async () => {
   startCleanUpJob();
 };
 
-// TODO: DOCUMENT WITH SWAGGER REQUEST TOKEN AND RESET PASSWORD
-
 startServer();
