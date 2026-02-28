@@ -22,7 +22,7 @@ export const playersTable = pgTable(
     avatarUrl: text("avatar_url"),
     lastSeen: timestamp("last_seen").defaultNow().notNull(),
 
-    isVerifiedEmail: boolean("is_verified_email").default(false),
+    isVerifiedEmail: boolean("is_verified_email").default(false).notNull(),
     totalGames: integer("total_games").default(0).notNull(),
     totalWins: integer("total_wins").default(0).notNull(),
     totalLosses: integer("total_losses").default(0).notNull(),
