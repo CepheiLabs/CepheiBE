@@ -12,7 +12,6 @@ import authRouter from "./routes/authRoutes";
 import playerRouter from "./routes/playerRoutes";
 import errorHandler from "./middlewares/errorHandler";
 import { connectRedis } from "./utils/redis";
-import { sendTestMail } from "./services/mailService";
 import { startCleanUpJob } from "./jobs";
 
 const PORT = 5000;
@@ -66,7 +65,6 @@ const startServer = async () => {
   });
 
   startCleanUpJob();
-  // sendTestMail();
 };
 
 // TODO: DOCUMENT WITH SWAGGER REQUEST TOKEN AND RESET PASSWORD
