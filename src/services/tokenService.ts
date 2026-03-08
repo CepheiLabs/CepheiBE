@@ -1,8 +1,7 @@
 import crypto from "crypto";
-import { db } from "../db";
-import { tokensTable } from "../db/schema";
+import { db } from "../db/index.js";
+import { tokensTable } from "../db/schema/index.js";
 import { and, eq, gt } from "drizzle-orm";
-import { BadRequestError } from "../errors";
 
 /**
  * @desc Creates a passwod reset token

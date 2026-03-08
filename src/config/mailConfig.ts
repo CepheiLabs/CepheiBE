@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { InternalServerError } from "../errors";
+import { InternalServerError } from "../errors/index.js";
 
 const MAILTRAP_USERNAME = process.env.MAILTRAP_USER;
 const MAILTRAP_PASSWORD = process.env.MAILTRAP_PASSWORD;

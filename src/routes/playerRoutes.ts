@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { getMe, updateUsername } from "../controllers/playerController";
-import { protect } from "../middlewares/authHandler";
+import { getMe, updateUsername } from "../controllers/playerController.js";
+import { protect } from "../middlewares/authHandler.js";
 
 const router = Router();
 

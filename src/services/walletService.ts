@@ -2,10 +2,14 @@ import crypto from "node:crypto";
 import { eq } from "drizzle-orm";
 import { verifyMessage } from "ethers";
 
-import { redisClient } from "../utils/redis";
-import { db } from "../db";
-import { playersTable } from "../db/schema";
-import { ValidationError, ConflictError, InternalServerError } from "../errors";
+import { redisClient } from "../utils/redis.js";
+import { db } from "../db/index.js";
+import { playersTable } from "../db/schema/index.js";
+import {
+  ValidationError,
+  ConflictError,
+  InternalServerError,
+} from "../errors/index.js";
 
 /**
  *

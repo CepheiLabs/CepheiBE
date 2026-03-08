@@ -1,2 +1,2 @@
-export * from "./authValidator";
-export * from "./playerValidator";
+export * from "./authValidator.js";
+export * from "./playerValidator.js";

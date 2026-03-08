@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import logger from "./logger";
+import logger from "./logger.js";
 
 // Since you're using camelCase, let's name the variable clearly
 export const redisClient = createClient({

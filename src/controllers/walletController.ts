@@ -1,10 +1,10 @@
 import handleAsync from "express-async-handler";
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response } from "express";
 
-import { walletNonceSchema, walletVerifySchema } from "../validators";
-import { ValidationError } from "../errors";
-import * as walletService from "../services/walletService";
-import { sendAuthResponse } from "../utils/authResponse";
+import { walletNonceSchema, walletVerifySchema } from "../validators/index.js";
+import { ValidationError } from "../errors/index.js";
+import * as walletService from "../services/walletService.js";
+import { sendAuthResponse } from "../utils/authResponse.js";
 
 /**
  * @desc    Generate nonce via Request Body

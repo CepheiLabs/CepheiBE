@@ -1,5 +1,5 @@
-import { db } from "../db";
-import { tokensTable } from "../db/schema";
+import { db } from "../db/index.js";
+import { tokensTable } from "../db/schema/index.js";
 
 import { or, lt, eq } from "drizzle-orm";
 

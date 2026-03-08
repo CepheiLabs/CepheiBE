@@ -1,10 +1,10 @@
 import { eq, or } from "drizzle-orm";
 import bcrypt from "bcrypt";
-import { db } from "../db";
-import { playersTable } from "../db/schema";
-import { InternalServerError } from "../errors";
-import type { Player, NewPlayer, PlayerUpdate } from "../@types";
-import { handleDbError } from "../errors/handleDbError";
+import { db } from "../db/index.js";
+import { playersTable } from "../db/schema/index.js";
+import { InternalServerError } from "../errors/index.js";
+import type { Player, NewPlayer, PlayerUpdate } from "../@types/index.js";
+import { handleDbError } from "../errors/handleDbError.js";
 
 // TYPES
 

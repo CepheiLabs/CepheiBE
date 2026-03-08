@@ -1,9 +1,9 @@
-import { playersTable } from "./players";
-import { gamesTable } from "./games";
-import { rafflesTable } from "./raffles";
-import { transactionsTable } from "./transactions";
-import { feesTable } from "./fees";
-import { tokensTable } from "./tokens";
+import { playersTable } from "./players.js";
+import { gamesTable } from "./games.js";
+import { rafflesTable } from "./raffles.js";
+import { transactionsTable } from "./transactions.js";
+import { feesTable } from "./fees.js";
+import { tokensTable } from "./tokens.js";
 
 export {
   playersTable,

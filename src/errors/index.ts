@@ -1,2 +1,2 @@
-export * from "./specificErrors";
-export { default as AppError } from "./appError";
+export * from "./specificErrors.js";
+export { default as AppError } from "./appError.js";
