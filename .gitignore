@@ -10,8 +10,5 @@ dist/
 #vs code config
 .vscode/
 
-#drizzle
-drizzle/
-
 #personal
 todos
