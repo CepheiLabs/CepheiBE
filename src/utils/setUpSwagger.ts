@@ -3,7 +3,9 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "../config/swaggerConfig"; // Your config from earlier
 import logger from "./logger";
 
-const URL = "http://localhost:5000/api-docs";
+const HOST_URL = process.env.HOST_URL!;
+
+const URL = `${HOST_URL}/api-docs`;
 
 export const setupSwagger = (app: Express): void => {
   // UI page
