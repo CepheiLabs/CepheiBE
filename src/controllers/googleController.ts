@@ -1,10 +1,10 @@
 import handleAsync from "express-async-handler";
 import type { Request, Response } from "express";
 
-import { googleSigninSchema } from "../validators/index.js";
-import { ValidationError } from "../errors/index.js";
-import * as googleService from "../services/googleService.js";
-import { sendAuthResponse } from "../utils/authResponse.js";
+import { googleSigninSchema } from "../validators";
+import { ValidationError } from "../errors";
+import * as googleService from "../services/googleService";
+import { sendAuthResponse } from "../utils/authResponse";
 
 /**
  * @desc    Sign in with google

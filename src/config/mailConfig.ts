@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { InternalServerError } from "../errors/index.js";
+import { InternalServerError } from "../errors";
 
 const EMAIL_USERNAME = process.env.EMAIL_USER;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;

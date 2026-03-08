@@ -1,4 +1,4 @@
-import { ConflictError, BadRequestError } from "../errors/index.js";
+import { ConflictError, BadRequestError } from "../errors";
 
 export const handleDbError = (err: any) => {
   // Extract the code from wherever Drizzle/Postgres hid it

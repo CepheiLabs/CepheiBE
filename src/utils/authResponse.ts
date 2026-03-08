@@ -1,5 +1,5 @@
 import type { Response } from "express";
-import { signToken } from "./jwt.js";
+import { signToken } from "./jwt";
 
 export const sendAuthResponse = (
   res: Response,

@@ -8,21 +8,18 @@ import {
   registrationSchema,
   requestTokenSchema,
   verifyEmailSchema,
-} from "../validators/index.js";
+} from "../validators";
 import {
   BadRequestError,
   ConflictError,
   InternalServerError,
   UnauthorizedError,
   ValidationError,
-} from "../errors/index.js";
-import * as playerService from "../services/playerService.js";
-import * as tokenService from "../services/tokenService.js";
-import * as mailService from "../services/mailService.js";
-import {
-  logoutCookieOptions,
-  sendAuthResponse,
-} from "../utils/authResponse.js";
+} from "../errors";
+import * as playerService from "../services/playerService";
+import * as tokenService from "../services/tokenService";
+import * as mailService from "../services/mailService";
+import { logoutCookieOptions, sendAuthResponse } from "../utils/authResponse";
 
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS || "10", 10);
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;

@@ -7,14 +7,11 @@ import {
   resetPassword,
   requestEmailVerification,
   verifyEmail,
-} from "../controllers/authController.js";
-import { identify, protect } from "../middlewares/authHandler.js";
+} from "../controllers/authController";
+import { identify, protect } from "../middlewares/authHandler";
 
-import {
-  getWalletNonce,
-  verifyWallet,
-} from "../controllers/walletController.js";
-import { googleSignin } from "../controllers/googleController.js";
+import { getWalletNonce, verifyWallet } from "../controllers/walletController";
+import { googleSignin } from "../controllers/googleController";
 
 const router = Router();
 

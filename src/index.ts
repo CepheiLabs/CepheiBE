@@ -1,18 +1,18 @@
 import express from "express";
 import type { Express } from "express";
-import { setupSwagger } from "./utils/setUpSwagger.js";
+import { setupSwagger } from "./utils/setUpSwagger";
 import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 
-import logger from "./utils/logger.js";
+import logger from "./utils/logger";
 
-import authRouter from "./routes/authRoutes.js";
-import playerRouter from "./routes/playerRoutes.js";
-import errorHandler from "./middlewares/errorHandler.js";
-import { connectRedis } from "./utils/redis.js";
-import { startCleanUpJob } from "./jobs/index.js";
+import authRouter from "./routes/authRoutes";
+import playerRouter from "./routes/playerRoutes";
+import errorHandler from "./middlewares/errorHandler";
+import { connectRedis } from "./utils/redis";
+import { startCleanUpJob } from "./jobs";
 
 const PORT = 5000;
 const app: Express = express();

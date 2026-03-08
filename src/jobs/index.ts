@@ -1,1 +1,1 @@
-export * from "./startCleanUpJob.js";
+export * from "./startCleanUpJob";

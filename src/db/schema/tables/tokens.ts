@@ -7,8 +7,8 @@ import {
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { playersTable } from "./tables.js";
-import { tokenPurposeEnum } from "../enums/enum.js";
+import { playersTable } from "./tables";
+import { tokenPurposeEnum } from "../enums/enum";
 import { sql } from "drizzle-orm";
 
 export const tokensTable = pgTable(

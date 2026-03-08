@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
 import type { TokenPayload } from "google-auth-library"; // Import the actual type!
 
-import googleAuthClient from "../utils/googleAuthCient.js";
-import { db } from "../db/index.js";
-import { playersTable } from "../db/schema/index.js";
-import { ValidationError, InternalServerError } from "../errors/index.js";
-import type { Player } from "../@types/index.js"; // Reuse your Player type
+import googleAuthClient from "../utils/googleAuthCient";
+import { db } from "../db";
+import { playersTable } from "../db/schema";
+import { ValidationError, InternalServerError } from "../errors";
+import type { Player } from "../@types"; // Reuse your Player type
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 

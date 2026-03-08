@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { ForbiddenError, UnauthorizedError } from "../errors/index.js";
-import * as playerService from "../services/playerService.js";
+import { ForbiddenError, UnauthorizedError } from "../errors";
+import * as playerService from "../services/playerService";
 
 const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
   const player = req.user;

@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import swaggerUi from "swagger-ui-express";
-import { swaggerSpec } from "../config/swaggerConfig.js"; // Your config from earlier
-import logger from "./logger.js";
+import { swaggerSpec } from "../config/swaggerConfig"; // Your config from earlier
+import logger from "./logger";
 
 const URL = "http://localhost:5000/api-docs";
 

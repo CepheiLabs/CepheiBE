@@ -7,8 +7,8 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 
-import { playersTable } from "./players.js";
-import { transactionTypeEnum } from "../enums/enum.js";
+import { playersTable } from "./players";
+import { transactionTypeEnum } from "../enums/enum";
 
 export const transactionsTable = pgTable(
   "transactions",

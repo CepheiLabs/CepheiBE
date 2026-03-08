@@ -1,6 +1,6 @@
-import transport, { FROM_EMAIL } from "../config/mailConfig.js";
-import { InternalServerError } from "../errors/index.js";
-import logger from "../utils/logger.js";
+import transport, { FROM_EMAIL } from "../config/mailConfig";
+import { InternalServerError } from "../errors";
+import logger from "../utils/logger";
 
 /**
  * Service to verify that the Mailtrap SMTP connection is working

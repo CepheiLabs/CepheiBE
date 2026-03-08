@@ -1,7 +1,7 @@
 import handleAsync from "express-async-handler";
 
-import { UnauthorizedError } from "../errors/index.js";
-import { verifyToken } from "../utils/jwt.js";
+import { UnauthorizedError } from "../errors";
+import { verifyToken } from "../utils/jwt";
 
 // 1. THE STRICT
 export const protect = handleAsync(async (req, res, next) => {

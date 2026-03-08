@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { AppError } from "../errors/index.js";
-import logger from "../utils/logger.js";
+import { AppError } from "../errors";
+import logger from "../utils/logger";
 
 interface ErrorResponse {
   status: string;
