@@ -78,38 +78,34 @@ export const handlePlayerWalletLink = async (
   address: string,
   currentUserId?: string,
 ) => {
+  if (!currentUserId) {
+    throw new ValidationError("User ID is required to link a wallet");
+  }
+
   const normalizedAddress = address.toLowerCase();
 
-  let player = await db.query.playersTable.findFirst({
+  // 1. Check if ANYONE else is already using this wallet
+  const existingWalletOwner = await db.query.playersTable.findFirst({
     where: eq(playersTable.walletAddress, normalizedAddress),
   });
 
-  // CASE A: User is already logged in (Linking)
-  if (currentUserId) {
-    if (player && player.id !== currentUserId) {
-      throw new ConflictError(
-        "This wallet is already linked to another account",
-      );
-    }
-    if (!player) {
-      [player] = await db
-        .update(playersTable)
-        .set({ walletAddress: normalizedAddress })
-        .where(eq(playersTable.id, currentUserId))
-        .returning();
-    }
-  }
-  // CASE B: Wallet-Only Login
-  else if (!player) {
-    [player] = await db
-      .insert(playersTable)
-      .values({
-        walletAddress: normalizedAddress,
-        username: `player_${normalizedAddress.slice(2, 8)}`,
-      })
-      .returning();
+  // Security Gate: Prevent stealing or double-linking
+  if (existingWalletOwner && existingWalletOwner.id !== currentUserId) {
+    throw new ConflictError(
+      "This wallet is already linked to another Cephi account",
+    );
   }
 
-  if (!player) throw new InternalServerError("Failed to process wallet login");
-  return player;
+  // 2. Link wallie
+  const [updatedPlayer] = await db
+    .update(playersTable)
+    .set({ walletAddress: normalizedAddress })
+    .where(eq(playersTable.id, currentUserId))
+    .returning();
+
+  if (!updatedPlayer) {
+    throw new InternalServerError("Failed to link wallet to your account");
+  }
+
+  return updatedPlayer;
 };
