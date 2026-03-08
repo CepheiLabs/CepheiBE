@@ -61,7 +61,6 @@ const startServer = async () => {
   app.listen(PORT, () => {
     logger.info(`App running on port ${PORT}...`);
     logger.warn("Remember to change auth rate limiting from 200 requests...");
-    logger.warn("Add wallet address to JWT for some routes auth...");
   });
 
   startCleanUpJob();
