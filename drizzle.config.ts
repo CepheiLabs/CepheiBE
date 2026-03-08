@@ -9,7 +9,9 @@ export default defineConfig({
   out: "./drizzle",
   dbCredentials: {
     url: process.env.DATABASE_URL!,
-    ssl: true,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
   verbose: true,
   strict: true,
