@@ -10,6 +10,8 @@ import logger from "./utils/logger";
 
 import authRouter from "./routes/authRoutes";
 import playerRouter from "./routes/playerRoutes";
+import healthCheckRouter from "./routes/healthCheckRoutes";
+
 import errorHandler from "./middlewares/errorHandler";
 import { connectRedis } from "./utils/redis";
 import { startCleanUpJob } from "./jobs";
@@ -48,6 +50,7 @@ app.use(cookieParser());
 // *️⃣*️⃣APPLICATION ROUTES*️⃣*️⃣
 app.use("/api/v1/auth", authLimiter, authRouter);
 app.use("/api/v1/players", playerRouter);
+app.use("/api/v1/health", healthCheckRouter);
 
 setupSwagger(app);
 
